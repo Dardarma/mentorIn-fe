@@ -1,32 +1,47 @@
 <script>
 
+
+export default {
+  props: ["item"], 
+};
 </script>
 
 <template>
-    <div class="text-center mb-4">
-        <div class="avatar-md mx-auto mb-4">
-          <div class="avatar-title bg-light rounded-circle text-primary h1">
-            <i class="mdi mdi-email-open"></i>
-          </div>
-        </div>
-
-        <BRow class="justify-content-center">
-          <BCol xl="10">
-            <h4 class="text-primary">Subscribe !</h4>
-            <p class="text-muted font-size-14 mb-4">
-              Subscribe our newletter and get notification to stay update.
-            </p>
-
-            <div class="input-group bg-light rounded">
-              <input type="email" class="form-control bg-transparent border-0" placeholder="Enter Email address"
-                aria-label="Recipient's username" aria-describedby="button-addon2" />
-
-              <BButton variant="primary" type="button" id="button-addon2">
-                <i class="bx bxs-paper-plane"></i>
-              </BButton>
-            </div>
-          </BCol>
-        </BRow>
-    </div>
-
+  <div v-if="item">
+   <BRow>
+    <BCol cols="12" class="mb-4">
+      <h4>{{ item.title }}</h4>
+      <h6>{{ item.mentee }}</h6>
+    </BCol>
+    <BCol cols="6">
+      <p><strong>Tanggal: </strong>
+      {{ item.Tanggal }}</p>
+    </BCol>
+    <BCol cols="6">
+      <p><strong>Jam:  </strong>
+      {{ item.jam }}</p>
+    </BCol>
+    <BCol cols="12">
+     <strong>Materi</strong>
+      <p>{{ item.materi }}</p>
+    </BCol>
+    <BCol cols="12">
+      <strong>To-Do Past:</strong>
+      <p>{{ item.todopast }}</p>
+    </BCol>
+    <BCol cols="12">
+      <strong>To-Do Pre:</strong>
+      <p>{{ item.todopre }}</p>
+    </BCol>
+    <BCol cols="12">
+      <strong>Hasil:</strong>
+      <p>{{ item.Hasil }}</p>
+    </BCol>
+    <BCol cols="12">
+      <strong>Feedback:</strong>
+      <p>{{ item.feedback }}</p>
+    </BCol>
+   </BRow>
+  </div>
 </template>
+

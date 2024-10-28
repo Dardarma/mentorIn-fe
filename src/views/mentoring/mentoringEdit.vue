@@ -17,8 +17,6 @@ export default{
             { value:"Belum", text:"Belum Selesai"}
             ],
             status: "Belum",
-            
-
         }
 
     }
@@ -33,7 +31,7 @@ export default{
             <BCardHeader>
                 <BRow>
                     <BCol cols="1">
-                        <RouterLink to="/mentoring" class="btn btn-primary">&lt;</RouterLink>
+                        <BButton @click="(this.$router.go(-1))" class="btn btn-secondary">&lt;</BButton>
                     </BCol>
                     <BCol cols="8">
                         <h2>Form Edit</h2>

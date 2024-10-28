@@ -3,6 +3,7 @@ import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import MentoringAdd from "@/views/mentoring/mentoringAdd";
 import TableHeadPagination from "@/components/common/table-head-pagination"
+import { dataMentoring } from "./data";
 
 
 export default {
@@ -35,69 +36,24 @@ export default {
                 SearchData: null,
                 LinkPagination: null,
                 
-                tableData:[
-                    {
-                        "name": "Ali Ahmad",
-                        "Tanggal": "2024-10-21",
-                        "jam": "09:00 - 10:00",
-                        "materi": "Intro to Programming",
-                        "Hasil": "Menyelesaikan latihan dasar",
-                        "todopast": "Menyelesaikan tugas 1",
-                        "todopre": "Membaca bab 2",
-                        "feedback": "Butuh pendampingan lebih pada konsep variabel",
-                        "status": "Selesai",
-                    },
-                    {
-                        "name": "Budi Setiawan",
-                        "Tanggal": "2024-10-21",
-                        "jam": "10:30 - 11:30",
-                        "materi": "Web Development",
-                        "Hasil": "Mengerti dasar HTML",
-                        "todopast": "Menyusun struktur halaman",
-                        "todopre": "Mempelajari CSS",
-                        "feedback": "Perlu latihan lebih pada tag HTML",
-                        "status": "Pending",
-                    },
-                    {
-                        "name": "Citra Rahma",
-                        "Tanggal": "2024-10-21",
-                        "jam": "13:00 - 14:00",
-                        "materi": "Database Design",
-                        "Hasil": "Membuat ERD",
-                        "todopast": "Menyelesaikan draft ERD",
-                        "todopre": "Mempelajari relasi antar tabel",
-                        "feedback": "Sudah cukup baik, lanjutkan ke tahap selanjutnya",
-                        "status": "Selesai",
-                    },
-                    {
-                        "name": "Dewi Putri",
-                        "Tanggal": "2024-10-21",
-                        "jam": "14:30 - 15:30",
-                        "materi": "Networking Basics",
-                        "Hasil": "Memahami topologi jaringan",
-                        "todopast": "Membaca teori dasar jaringan",
-                        "todopre": "Membuat simulasi jaringan",
-                        "feedback": "Perlu pemahaman lebih pada subnetting",
-                        "status": "Pending",
-                    }
-                ]
+                tableData: dataMentoring,
             }
         }
     },
     props: ["TableHeadPagination"],
     emits: ['dataTableAction'],
     methods: {
-                dataTableAction(){
-                let dataTableAction = {
-                    SortKey: this.tableHeadPagination.SortKey,
-                    LimitOrder: this.tableHeadPagination.LimitOrder,
-                    SearchData: this.tableHeadPagination.SearchData,
-                    LinkPagination: this.tableHeadPagination.LinkPagination
-                };
-                this.$emit('dataTableAction', dataTableAction);
+    dataTableAction(){
+        let dataTableAction = {
+            SortKey: this.tableHeadPagination.SortKey,
+            LimitOrder: this.tableHeadPagination.LimitOrder,
+            SearchData: this.tableHeadPagination.SearchData,
+            LinkPagination: this.tableHeadPagination.LinkPagination
+        };
+        this.$emit('dataTableAction', dataTableAction);
             },
             toggleModal() {
-            this.showModal = !this.showModal;  // Function to toggle the modal
+            this.showModal = !this.showModal;  
             }
         }
     }

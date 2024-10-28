@@ -1,7 +1,12 @@
 <script>
 export default {
     name: "CardItem",
-    props: ["cardItem"],
+    props: {
+        cardItem:{
+            type: Array,
+            required: true
+        }
+    },
     data() {
         return {
             gridData1: [],
@@ -9,40 +14,35 @@ export default {
         };
     },
     created() {
-        this.gridData1 = this.cardItem.GridData1;
-        this.searchData = this.cardItem.SearchData;
-    },
+        this.gridData1 = this.cardItem;
+    }
+    ,
     computed: {
-        filteredData() {
-            if (this.searchData === "") {
-                return this.gridData1;
-            }
-            return this.gridData1.filter(card => {
-  
-                return (
-                    card.title.toLowerCase().includes(this.searchData.toLowerCase()) ||
-                    card.date.toLowerCase().includes(this.searchData.toLowerCase()) ||
-                    card.mentee.toLowerCase().includes(this.searchData.toLowerCase())
-                );
-            });
-        }
+      filteredData() {
+        return this.gridData1.filter((data) => {
+          const search = this.searchData.toLowerCase();
+          return(
+            data.title.toLowerCase().includes(search) ||
+            data.mentee.toLowerCase().includes(search)||
+            data.Tanggal.toLowerCase().includes(search)
+          );
+        });
+      }
     },
     methods: {
         dataTableAction() {
-
-            this.$emit('dataCardItem', {
-                GridData1: this.filteredData,
-                SearchData: this.searchData
+            this.$emit("searchData", {
+                searchData: this.searchData
             });
         },
         truncateText(text, maxLength) {
-            if (text.length > maxLength) {
+            if (typeof text === 'string' && text.length > maxLength) {
                 return text.substring(0, maxLength) + "...";
             }
             return text;
         },
-        openModal() {
-            this.$emit("showModal");
+        openModal(id) {
+            this.$emit("showModal",id);
         }
     }
 }
@@ -77,13 +77,13 @@ export default {
                             </BRow>
                             <hr class="mb-4" />
                             <BRow>
-                                <BCol sm="6" v-for="card in filteredData" :key="card.title">
+                                <BCol sm="6" v-for="card in filteredData" :key="card.id">
                                     <BCard no-body class="p-1 border shadow-none">
                                         <div class="p-2">
                                             <h5>
                                                 <router-link to="/blog/detail" class="text-dark">{{ card.title }}</router-link>
                                             </h5>
-                                            <p class="text-muted mb-0">{{ card.date }}</p>
+                                            <p class="text-muted mb-0">{{ card.Tanggal }}</p>
                                             <ul class="list-inline mt-1">
                                                 <li class="list-inline-item me-3">
                                                     <BLink href="javascript:void(0);" class="text-muted">
@@ -97,15 +97,15 @@ export default {
                                             <strong>Materi:</strong>
                                             <p>{{ truncateText(card.materi, 20) }}</p>
                                             <strong>To-Do Past:</strong> 
-                                            <p>{{ truncateText(card.todoPast, 20) }}</p>
+                                            <p>{{ truncateText(card.todopast, 20) }}</p>
                                             <strong>To-Do Pre:</strong> 
-                                            <p>{{ truncateText(card.todoPre, 20) }}</p>
+                                            <p>{{ truncateText(card.todopre, 20) }}</p>
                                             <strong>Hasil:</strong> 
-                                            <p>{{ truncateText(card.hasil, 20) }}</p>
+                                            <p>{{ truncateText(card.Hasil, 20) }}</p>
                                             <strong>Feedback:</strong>
                                             <p>{{ truncateText(card.feedback, 20) }}</p>
                                             <div>
-                                                <BLink @click.prevent="openModal" class="text-primary">
+                                                <BLink @click.prevent="openModal(card.id)" class="text-primary">
                                                   Read more <i class="mdi mdi-arrow-right"></i>
                                                 </BLink>
                                             </div>
