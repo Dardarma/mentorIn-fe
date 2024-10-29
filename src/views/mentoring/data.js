@@ -12,7 +12,7 @@ const dataMentoring = [
         "todopast": "Menyelesaikan tugas inheritance",
         "todopre": "Mempelajari polymorphism",
         "feedback": "Perlu latihan lebih pada konsep inheritance",
-        "status": "Selesai",
+        "status": true,
     },
     {
         "id": 2,
@@ -25,7 +25,7 @@ const dataMentoring = [
         "todopast": "Menyusun struktur linked list",
         "todopre": "Mempelajari binary tree",
         "feedback": "Perlu pemahaman lebih pada linked list",
-        "status": "Belum Selesai",
+        "status": true,
     },
     {
         "id": 3,
@@ -38,7 +38,7 @@ const dataMentoring = [
         "todopast": "Menyelesaikan tugas sorting",
         "todopre": "Mempelajari algoritma searching",
         "feedback": "Sudah cukup baik, lanjutkan ke tahap selanjutnya",
-        "status": "Selesai",
+        "status": false,
     },
     {
         "id": 4,
@@ -51,7 +51,7 @@ const dataMentoring = [
         "todopast": "Membaca teori SDLC",
         "todopre": "Membuat diagram UML",
         "feedback": "Perlu pemahaman lebih pada tahap SDLC",
-        "status": "Belum Selesai",
+        "status": false,
     },
     {
         "id": 5,
@@ -64,7 +64,7 @@ const dataMentoring = [
         "todopast": "Menyelesaikan tugas regression",
         "todopre": "Mempelajari classification",
         "feedback": "Perlu latihan lebih pada regression",
-        "status": "Belum Selesai",
+        "status": true,
     }
 ]
 

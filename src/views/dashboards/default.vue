@@ -58,7 +58,10 @@ export default {
       this.selectedItem = this.tabledata.find((item) => item.id === itemId);
       this.showModal = true;
     },
-
+    toedit() {
+      const idAsString = this.selectedItem.id.toString();
+      this.$router.push({ name: 'mentorring-edit', params: { id: idAsString } });
+    },
   },
 };
 </script>
@@ -93,7 +96,7 @@ export default {
 
       <template #footer>
         <BButton variant="danger" @click="showModal = false">Close</BButton>
-        <RouterLink :to="('/mentorring/edit')" class="btn btn-primary" >Edit</RouterLink>
+        <BButton @click="toedit()" class="btn btn-primary" >Edit</BButton>
       </template>
     </BModal>
 

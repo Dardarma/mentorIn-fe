@@ -98,14 +98,13 @@ export default [
 
   // -- mentorring List -- //
   {
-    path: "/mentorring/list",
-    name: "mentorring-list",
+    path: "/jadwal/list",
+    name: "jadwal",
     meta: { title: "Mentorring List", authRequired: true },
     component: () => import("../views/mentoring/mentoring-list.vue")
   },
-
   {
-    path: "/mentorring/edit",
+    path: "/mentorring/edit/:id",
     name: "mentorring-edit",
     meta: { title: "Mentorring Edit", authRequired: true },
     component: () => import("../views/mentoring/mentoringEdit.vue")  

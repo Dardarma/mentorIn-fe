@@ -2,9 +2,8 @@
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import MentoringAdd from "@/views/mentoring/mentoringAdd";
-import TableHeadPagination from "@/components/common/table-head-pagination"
+import TableHeadPagination from "@/components/common/table-head-pagination";
 import { dataMentoring } from "./data";
-
 
 export default {
     components: {
@@ -12,7 +11,7 @@ export default {
         PageHeader,
         TableHeadPagination,
         MentoringAdd
-        },
+    },
     data() {
         return {
             showModal: false,
@@ -20,45 +19,63 @@ export default {
                 Column: [
                     { width: "50px", label: "No", name: "-" },
                     { width: "auto", label: "Nama Mentee", name: "name" },
-                    { width: "auto", label: "Tanggal", name: "Tanggal" },
+                    { width: "auto", label: "Tanggal", name: "tanggal" },
                     { width: "auto", label: "Jam", name: "jam" },
                     { width: "auto", label: "Materi", name: "materi" },
-                    { width: "auto", label: "Hasil", name: "Hasil" },
-                    { width: "auto", label: "Todo Past", name: "todopast" },
-                    { width: "auto", label: "Todo Pre", name: "todopre" },
-                    { width: "auto", label: "Feed Back", name: "feedback" },
                     { width: "auto", label: "Status", name: "status" },
                     { width: "auto", label: "Aksi", name: "-" },
                 ],
-                SortKey: null,
-                SortOrder: [],
+                SortKey: 'id',
                 LimitOrder: 10,
-                SearchData: null,
-                LinkPagination: null,
-                
+                SearchData: '',
+                LinkPagination: 1,
                 tableData: dataMentoring,
+                displayedData: []
             }
+        };
+    },
+    methods: {
+        dataTableAction() {
+            let dataTableAction = {
+                SortKey: this.tableHeadPagination.SortKey,
+                LimitOrder: this.tableHeadPagination.LimitOrder,
+                SearchData: this.tableHeadPagination.SearchData,
+                LinkPagination: this.tableHeadPagination.LinkPagination
+            };
+
+            // Filter data berdasarkan SearchData
+            let filteredData = this.tableHeadPagination.tableData.filter((data) => {
+                return data.mentee.toLowerCase().includes(dataTableAction.SearchData.toLowerCase());
+            });
+
+            // Sorting data
+            filteredData.sort((a, b) => {
+                if (a[dataTableAction.SortKey] < b[dataTableAction.SortKey]) return -1;
+                if (a[dataTableAction.SortKey] > b[dataTableAction.SortKey]) return 1;
+                return 0;
+            });
+
+            // Paginate data
+            let startIndex = (dataTableAction.LinkPagination - 1) * dataTableAction.LimitOrder;
+            this.tableHeadPagination.displayedData = filteredData.slice(startIndex, startIndex + dataTableAction.LimitOrder);
+
+            // Emit event jika diperlukan
+            this.$emit('dataTableAction', dataTableAction);
+        },
+        toggleModal() {
+            this.showModal = !this.showModal;  
+        },
+        edit(id) {
+            this.$router.push({ name: 'mentorring-edit', params: { id: id } });
         }
     },
-    props: ["TableHeadPagination"],
-    emits: ['dataTableAction'],
-    methods: {
-    dataTableAction(){
-        let dataTableAction = {
-            SortKey: this.tableHeadPagination.SortKey,
-            LimitOrder: this.tableHeadPagination.LimitOrder,
-            SearchData: this.tableHeadPagination.SearchData,
-            LinkPagination: this.tableHeadPagination.LinkPagination
-        };
-        this.$emit('dataTableAction', dataTableAction);
-            },
-            toggleModal() {
-            this.showModal = !this.showModal;  
-            }
-        }
+    created() {
+        // Initialize displayedData on load
+        this.dataTableAction();
     }
-
+};
 </script>
+
 <template>
     <Layout>
         <PageHeader title="Mentoring List" pageTitle="Mentoring"/>
@@ -133,21 +150,17 @@ export default {
                             </tr>
                             <tr v-else v-for="(data, index) in tableHeadPagination.tableData" :key="index">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ data.name }}</td>
+                                <td>{{ data.mentee }}</td>
                                 <td>{{ data.Tanggal }}</td>
                                 <td>{{ data.jam }}</td>
                                 <td>{{ data.materi }}</td>
-                                <td>{{ data.Hasil }}</td>
-                                <td>{{ data.todopast }}</td>
-                                <td>{{ data.todopre }}</td>
-                                <td>{{ data.feedback }}</td>
-                                <td>{{ data.status }}</td>
+                                <td>{{ data.status ? 'Terlaksana':'Belum Terlaksana' }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary btn-sm">
-                                        <i class="bx bx-edit-alt font-size-16 align-middle me-1"></i> Edit
+                                    <button type="button" class="btn btn-primary btn-sm mx-1" @click="edit(data.id)">
+                                        <i class="bx bx-edit-alt font-size-16 align-middle me-1"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger btn-sm">
-                                        <i class="bx bx-trash font-size-16 align-middle me-1"></i> Hapus
+                                        <i class="bx bx-trash font-size-16 align-middle me-1"></i> 
                                     </button>
                                 </td>
                             </tr>
