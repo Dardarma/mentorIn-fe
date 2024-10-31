@@ -11,6 +11,16 @@ import { dataMentoring } from "../mentoring/data";
  * Dashboard Component
  */
 export default {
+  computed:{
+    activeRole(){
+       const role = localStorage.getItem('activeRole')
+       return role ? JSON.parse(role) : null
+       
+    },
+    isEdit(){
+      return this.activeRole.role_id == 1 || this.activeRole.role_id == 3
+    }
+  },
   components: {
     Layout,
     PageHeader,
@@ -62,6 +72,9 @@ export default {
       const idAsString = this.selectedItem.id.toString();
       this.$router.push({ name: 'mentorring-edit', params: { id: idAsString } });
     },
+    getJadwal(){
+      
+    }
   },
 };
 </script>
@@ -96,7 +109,8 @@ export default {
 
       <template #footer>
         <BButton variant="danger" @click="showModal = false">Close</BButton>
-        <BButton @click="toedit()" class="btn btn-primary" >Edit</BButton>
+        <BButton @click="toedit()" class="btn btn-primary" v-if="isEdit">Edit</BButton>
+        <BButton  class="btn btn-primary" v-else>Feed Back</BButton>
       </template>
     </BModal>
 

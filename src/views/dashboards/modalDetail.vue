@@ -3,6 +3,10 @@
 
 export default {
   props: ["item"], 
+  mounted() {
+    this.item
+  },
+  
 };
 </script>
 
@@ -11,7 +15,7 @@ export default {
    <BRow>
     <BCol cols="12" class="mb-4">
       <h4>{{ item.title }}</h4>
-      <h6>{{ item.mentee }}</h6>
+      <h6>{{ item.user.name }}</h6>
     </BCol>
     <BCol cols="6">
       <p><strong>Tanggal: </strong>
@@ -23,7 +27,7 @@ export default {
     </BCol>
     <BCol cols="12">
      <strong>Materi</strong>
-      <p>{{ item.materi }}</p>
+      <p>{{ item.materi.materi }}</p>
     </BCol>
     <BCol cols="12">
       <strong>To-Do Past:</strong>

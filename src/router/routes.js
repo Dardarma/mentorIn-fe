@@ -88,6 +88,13 @@ export default [
     component: () => import("../views/master/user/index-user.vue")
   },
 
+  //--periode--//
+  {
+    path: "/master/periode",
+    name: "periode",
+    meta: { title: "Periode", authRequired: true },
+    component: () => import("../views/master/periode/index-periode.vue")
+  },
   // -- Profil User -- //
   {
     path: "/accout/profile-user",
@@ -95,7 +102,6 @@ export default [
     meta: { title: "Profil User", authRequired: true },
     component: () => import("../views/account/profile.vue")
   },
-
   // -- mentorring List -- //
   {
     path: "/jadwal/list",

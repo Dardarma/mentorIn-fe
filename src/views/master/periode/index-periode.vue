@@ -2,8 +2,8 @@
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import TableHeadPagination from "@/components/common/table-head-pagination"
-import CreateUser from "@/views/master/user/create-user"
-import UpdateUser from "@/views/master/user/update-user"
+import CreatePeriode from "@/views/master/periode/create-periode"
+import UpdatePeriode from "@/views/master/periode/update-periode"
 
 import axios from 'axios';
 import Swal from "sweetalert2";
@@ -13,13 +13,13 @@ import { useNotificationStore } from '@/state/pinia'
 const notification = useNotificationStore()
 
 export default {
-    components: { Layout, PageHeader, TableHeadPagination, CreateUser, UpdateUser },
+    components: { Layout, PageHeader, TableHeadPagination, CreatePeriode, UpdatePeriode },
     data() {
         const columnData = [
             { width: "50px", label: "No", name: "-" },
-            { width: "auto", label: "Nama User", name: "name" },
-            { width: "auto", label: "Username", name: "username" },
-            { width: "auto", label: "Status", name: "-" },
+            { width: "auto", label: "Tanggal Mulai", name: "tanggal_mulai" },
+            { width: "auto", label: "Tanggal Selesai", name: "tanggal_akhir" },
+            { width: "auto", label: "durasi Magang bulan", name: "durasi_magang" },
             { width: "auto", label: "Aksi", name: "-" },
         ]
         const sortOrderData = [];
@@ -46,16 +46,12 @@ export default {
             },
             tableData: {
                 // init table data
-                UrlDataTable: process.env.VUE_APP_BACKEND_URL_API + 'user',
+                UrlDataTable: process.env.VUE_APP_BACKEND_URL_API + 'periode',
                 DrawTable: 0,
                 LoadingTable: true,
                 DataTable:[],
 
-                // filter data
-                filter_status: "ENABLE",
-                filter_role: ""
             },
-            referenceRole: [],
             modalFormShowAdd: false,
             modalFormShowEdit: false,
             editedData: null
@@ -101,7 +97,6 @@ export default {
                     sort_field: this.tableHeadPagination.SortKey,
                     sort_order: this.tableHeadPagination.SortOrderDir,
                     status: this.tableData.filter_status,
-                    role: this.tableData.filter_role
                 },
                 headers: {
                     Accept: "application/json",
@@ -134,7 +129,7 @@ export default {
             // limit dan search data
             this.tableHeadPagination.LimitOrder = tableData.LimitOrder;
             this.tableHeadPagination.SearchData = tableData.SearchData;
-            this.tableData.UrlDataTable = tableData.LinkPagination ? tableData.LinkPagination : process.env.VUE_APP_BACKEND_URL_API + 'user';
+            this.tableData.UrlDataTable = tableData.LinkPagination ? tableData.LinkPagination : process.env.VUE_APP_BACKEND_URL_API + 'periode';
             this.getTableData();
         },
         showFormModal(type, data){
@@ -157,37 +152,6 @@ export default {
             }
             await this.getTableData();
         },
-        changeStatus(status, data){
-            notification.setSwalConfirmationAttr('Perhatian', 'Anda yakin ingin ubah status data tersebut?');
-            Swal.fire(notification.swalConfirmationAttr).then((result) => {
-                if (result.isConfirmed) {
-                    Swal.fire(notification.swalLoading)
-
-                    let config_status = {
-                        method: "put",
-                        url: process.env.VUE_APP_BACKEND_URL_API + 'user/' + data?.user_id + '/' + status,
-                        headers: {
-                            Authorization: "Bearer " + localStorage.getItem('accessToken')
-                        }
-                    }
-
-                    axios(config_status).then((response) => {
-                        let dataReponse = response.data.meta.status;
-                        if(dataReponse == 'success') {
-                            Swal.fire(notification.swalAlertDefaultUpdateSuccess);
-                            this.getTableData();
-                        } else {
-                            Swal.fire(notification.swalAlertDefaultUpdateError);
-                        }
-                    }).catch((error) => {
-                        notification.setSwalAlertForm("error", "Oops...", JSON.stringify(error.response.data.data.error));
-                        Swal.fire(notification.swalAlertForm);
-                    });
-                } else if (result.isDenied) {
-                    Swal.close();
-                }
-            });
-        },
         deleteData(data){
             notification.setSwalConfirmationAttr('Perhatian!!!', 'Anda yakin ingin menghapus data tersebut?');
             Swal.fire(notification.swalConfirmationAttr).then((result) => {
@@ -196,7 +160,7 @@ export default {
 
                     let config_delete = {
                         method: "delete",
-                        url: process.env.VUE_APP_BACKEND_URL_API + 'user/' + data?.role_id,
+                        url: process.env.VUE_APP_BACKEND_URL_API + 'periode/delete' + data?.role_id,
                         headers: {
                             Authorization: "Bearer " + localStorage.getItem('accessToken')
                         }
@@ -225,48 +189,14 @@ export default {
 
 <template>
     <Layout>
-        <PageHeader title="User" pageTitle="Master" />
+        <PageHeader title="periode" pageTitle="Master" />
         <BRow>
-            <BCol cols="12">
-                <BCard no-body>
-                    <BCardBody class="p-4">
-                        <div class="row">
-                            <div class="col-12">
-                                <BCardTitle>Filter Data Menu Master</BCardTitle>
-                                <hr/>
-                            </div>
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-3">
-                                        <BFormGroup class="mb-3" label="Status" label-for="filter-status">
-                                            <select class="form-select" id="filter-status" v-model="tableData.filter_status" v-on:change="getTableData()">
-                                                <option value="ENABLE">ENABLE</option>
-                                                <option value="DISABLE">DISABLE</option>
-                                            </select>
-                                        </BFormGroup>
-                                    </div>
-                                    <div class="col-3">
-                                        <BFormGroup class="mb-3" label="Role" label-for="filter-role">
-                                            <select class="form-select" id="filter-role" v-model="tableData.filter_role" v-on:change="getTableData()">
-                                                <option value="">--- Pilih ---</option>
-                                                <option v-for="(data, index) in referenceRole" :key="index" :value="data.role_id">
-                                                    {{ data.role_name }}
-                                                </option>
-                                            </select>
-                                        </BFormGroup>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </BCardBody>
-                </BCard>
-            </BCol>
             <BCol cols="12">
                 <BCard no-body>
                     <BCardBody class="p-4">
                         <BRow>
                             <BCol cols="6">
-                                <BCardTitle>Semua Data User</BCardTitle>
+                                <BCardTitle>Semua Data Periode</BCardTitle>
                             </BCol>
                             <BCol cols="6">
                                 <div class="d-flex flex-wrap gap-2 justify-content-end">
@@ -303,31 +233,14 @@ export default {
                                             {{ index + 1 }}.
                                         </div>
                                     </td>
-                                    <td>{{ data.name }}</td>
-                                    <td>{{ data.username }}</td>
-                                    <td class="text-center">
-                                        <div v-if="data.status == 'ENABLE'">
-                                            <span class="badge badge-pill badge-soft-success font-size-12">ENABLE</span>
-                                        </div>
-                                        <div v-else>
-                                            <span class="badge badge-pill badge-soft-danger font-size-12">DISABLE</span>
-                                        </div>
-                                    </td>
+                                    <td>{{ data.tanggal_mulai }}</td>
+                                    <td>{{ data.tanggal_akhir }}</td>
+                                    <td >{{ data.durasi_magang }}</td>
                                     <td>
-                                        <div v-if="data.status == 'ENABLE'">
+                                        <div>
                                             <div class="d-flex flex-wrap justify-content-center gap-2">
                                                 <button type="button" class="btn btn-info btn-sm" v-on:click="showFormModal('edit', data)">
                                                     <i class="bx bx-edit font-size-16 align-middle me-1"></i> Edit
-                                                </button>
-                                                <button type="button" class="btn btn-warning btn-sm" v-on:click="changeStatus('DISABLE', data)">
-                                                    <i class="bx bxs-error font-size-16 align-middle me-1"></i> Disable
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div v-else>
-                                            <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                <button type="button" class="btn btn-success btn-sm" v-on:click="changeStatus('ENABLE', data)">
-                                                    <i class="bx bx-check-double font-size-16 align-middle me-1"></i> Enable
                                                 </button>
                                                 <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteData(data)">
                                                     <i class="bx bx-trash-alt font-size-16 align-middle me-1"></i> Hapus
@@ -345,12 +258,12 @@ export default {
     </Layout>
 
     <!-- Modal Tambah Data -->
-    <BModal v-model="modalFormShowAdd" id="modal-add" size="lg" title="Tambah User" title-class="font-18" hide-footer>
-        <CreateUser v-if="modalFormShowAdd" @closeFormRefreshTable="closeFormRefreshTable"></CreateUser>
+    <BModal v-model="modalFormShowAdd" id="modal-add" size="lg" title="Tambah periode" title-class="font-18" hide-footer>
+        <CreatePeriode v-if="modalFormShowAdd" @closeFormRefreshTable="closeFormRefreshTable"></CreatePeriode>
     </BModal>
 
     <!-- Modal Edit Data -->
-    <BModal v-model="modalFormShowEdit" id="modal-edit" size="lg" title="Edit User" title-class="font-18" hide-footer>
-        <UpdateUser v-if="modalFormShowEdit" :dataEdit="editedData" @closeFormRefreshTable="closeFormRefreshTable"></UpdateUser>
+    <BModal v-model="modalFormShowEdit" id="modal-edit" size="lg" title="Edit periode" title-class="font-18" hide-footer>
+        <UpdatePeriode v-if="modalFormShowEdit" :dataEdit="editedData" @closeFormRefreshTable="closeFormRefreshTable"></UpdatePeriode>
     </BModal>
 </template>

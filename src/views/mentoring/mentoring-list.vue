@@ -3,24 +3,30 @@ import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import MentoringAdd from "@/views/mentoring/mentoringAdd";
 import TableHeadPagination from "@/components/common/table-head-pagination";
-import { dataMentoring } from "./data";
+import MentoringDetail from "./modalDetail.vue";
+import axios from "axios";
+
 
 export default {
     components: {
         Layout,
         PageHeader,
         TableHeadPagination,
-        MentoringAdd
+        MentoringAdd,
+        MentoringDetail
+
     },
     data() {
         return {
             showModal: false,
+            showModalDetail:false,
+            selectedData: [],
             tableHeadPagination: {
                 Column: [
                     { width: "50px", label: "No", name: "-" },
                     { width: "auto", label: "Nama Mentee", name: "name" },
-                    { width: "auto", label: "Tanggal", name: "tanggal" },
-                    { width: "auto", label: "Jam", name: "jam" },
+                    { width: "auto", label: "Tanggal", name: "tanggal_mentoring" },
+                    { width: "auto", label: "Jam", name: "jam_mentoring" },
                     { width: "auto", label: "Materi", name: "materi" },
                     { width: "auto", label: "Status", name: "status" },
                     { width: "auto", label: "Aksi", name: "-" },
@@ -29,10 +35,14 @@ export default {
                 LimitOrder: 10,
                 SearchData: '',
                 LinkPagination: 1,
-                tableData: dataMentoring,
-                displayedData: []
+                LoadingTable: false,
+                tableData: [],
+                displayedData: [],
             }
         };
+    },
+    mounted(){
+        this.getJadwal();
     },
     methods: {
         dataTableAction() {
@@ -42,23 +52,6 @@ export default {
                 SearchData: this.tableHeadPagination.SearchData,
                 LinkPagination: this.tableHeadPagination.LinkPagination
             };
-
-            // Filter data berdasarkan SearchData
-            let filteredData = this.tableHeadPagination.tableData.filter((data) => {
-                return data.mentee.toLowerCase().includes(dataTableAction.SearchData.toLowerCase());
-            });
-
-            // Sorting data
-            filteredData.sort((a, b) => {
-                if (a[dataTableAction.SortKey] < b[dataTableAction.SortKey]) return -1;
-                if (a[dataTableAction.SortKey] > b[dataTableAction.SortKey]) return 1;
-                return 0;
-            });
-
-            // Paginate data
-            let startIndex = (dataTableAction.LinkPagination - 1) * dataTableAction.LimitOrder;
-            this.tableHeadPagination.displayedData = filteredData.slice(startIndex, startIndex + dataTableAction.LimitOrder);
-
             // Emit event jika diperlukan
             this.$emit('dataTableAction', dataTableAction);
         },
@@ -67,7 +60,38 @@ export default {
         },
         edit(id) {
             this.$router.push({ name: 'mentorring-edit', params: { id: id } });
+        },
+        showdetail(data){
+            this.selectedData = data;
+            this.showModalDetail = true;
+            console.log(this.selectedData);
+        },
+        closeFormRefreshTable() {
+            this.showModal = false;
+        },
+        getJadwal(){
+            this.tableHeadPagination.LoadingTable = true
+            let config ={
+                mentod: 'get',
+                url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/index',
+                headers:{
+                    Accept: 'application/json',
+                    Authorization: "Bearer" + localStorage.getItem('accessToken')
+                }
+            }
+
+            axios(config)
+            .then((response) =>{
+                this.tableHeadPagination.tableData = response.data.data.jadwal
+                this.tableHeadPagination.LoadingTable = false
+                
+            })
+            .catch((error) => {
+                console.log(error);
+                this.tableHeadPagination.LoadingTable = false
+            })
         }
+
     },
     created() {
         // Initialize displayedData on load
@@ -82,7 +106,7 @@ export default {
         <BRow>
             <BCol cols="12">
                 <BCard no-body>
-                    <BcardBody class="p-4">
+                    <BCardBody class="p-4">
                     <div class="row">
                         <div class="col-12">
                             <BCardTitle>Filter Data Mentoring</BCardTitle>
@@ -117,7 +141,7 @@ export default {
                             </div>
                         </div>
                     </div>
-                    </BcardBody>
+                    </BCardBody>
                 </BCard>
             </BCol>
             <BCol cols="12">
@@ -148,19 +172,22 @@ export default {
                             <tr v-else-if="tableHeadPagination.tableData.length === 0">
                                 <td class="text-center" :colspan="tableHeadPagination.Column.length">Data Tidak Tersedia</td>
                             </tr>
-                            <tr v-else v-for="(data, index) in tableHeadPagination.tableData" :key="index">
+                            <tr v-else v-for="(data, index) in tableHeadPagination.tableData" :key="data.id">
                                 <td>{{ index + 1 }}</td>
-                                <td>{{ data.mentee }}</td>
-                                <td>{{ data.Tanggal }}</td>
-                                <td>{{ data.jam }}</td>
-                                <td>{{ data.materi }}</td>
-                                <td>{{ data.status ? 'Terlaksana':'Belum Terlaksana' }}</td>
+                                <td>{{ data.user.name || 'N/A'}}</td>
+                                <td>{{ data.tanggal_mentoring  }}</td>
+                                <td>{{ data.jam_mentoring }}</td>
+                                <td>{{ data.materi.materi || 'N/A' }}</td>
+                                <td>{{ data.materi.status ? 'Terlaksana' : 'Belum Terlaksana' }}</td>
                                 <td>
-                                    <button type="button" class="btn btn-primary btn-sm mx-1" @click="edit(data.id)">
+                                    <button type="button" class="btn btn-warning btn-sm mx-1" @click="edit(data.id)">
                                         <i class="bx bx-edit-alt font-size-16 align-middle me-1"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger btn-sm">
                                         <i class="bx bx-trash font-size-16 align-middle me-1"></i> 
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-sm mx-1">
+                                        <i class='bx bxs-show font-size-16 align-middle me-1' @click="showdetail(data)"></i>
                                     </button>
                                 </td>
                             </tr>
@@ -172,6 +199,10 @@ export default {
         </BRow>
     </Layout>
     <BModal v-model="showModal" id="modal-add" size="lg" title="Tambah Mentoring" title-class="font-18" hide-footer>
-        <MentoringAdd v-if="showModal"></MentoringAdd>
+        <MentoringAdd v-if="showModal" @closeFormRefreshTable="closeFormRefreshTable"></MentoringAdd>
     </BModal>
+    <BModal v-model="showModalDetail" id="modal-detail" size="lg" title="Detail Mentoring" tittle-class="font-18">
+        <MentoringDetail :item="selectedData"></MentoringDetail>
+    </BModal>
+    
 </template>
