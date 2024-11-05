@@ -16,22 +16,44 @@ export default {
         dataRole.forEach((datanya) => {
             roleData.push(datanya.role_id);
         });
+
+
         console.log(this.$props.dataEdit);
 
         return {
             name: this.$props.dataEdit.name,
             username: this.$props.dataEdit.username,
+            asal_instansi: this.$props.dataEdit.asal_instansi,
+
             password: null,
             password_konfirm: null,
             path_photo: null,
+            selectedMentor: this.$props.dataEdit?.mentor,
+            periode_magang: this.$props.dataEdit?.periode,
             role: roleData,
 
+            mentorOption: [],
+            periodeOption:[],
             referenceRole: [],
         }
     },
     async mounted(){
         await this.getReferenceRole()
+        this.getMentor()
+        this.getPeriode()
+        console.log(this.$props.dataEdit?.mentor)
+        console.log(this.$props.dataEdit?.periode)
     },
+    watch: {
+        dataEdit: function(){
+            this.name = this.$props.dataEdit.name;
+            this.username = this.$props.dataEdit.username;
+            this.asal_instansi = this.$props.dataEdit.asal_instansi;
+            this.selectedMentor = this.$props.dataEdit?.mentor;
+            this.periode_magang = this.$props.dataEdit?.periode;
+            this.role = this.$props.dataEdit.user_role.map(item => item.role_id);
+        },},
+        
     emits: ['closeFormRefreshTable'],
     methods:{
         async getReferenceRole(){
@@ -55,8 +77,45 @@ export default {
                 Swal.fire(notification.swalAlert);
             });
         },
-        updateData(){
-            Swal.fire(notification.swalLoading)
+        getMentor(){
+            let config = {
+                method: "get",
+                url: process.env.VUE_APP_BACKEND_URL_API + 'user/mentor',
+                headers:{
+                    Accept: 'aplication/json',
+                    Authorization: 'Bearer ' + localStorage.getItem('accessToken')
+                }
+            }
+
+            axios (config).then((response) => {
+                this.mentorOption = response.data.data.data.map(item => ({
+                    text: item.name, 
+                    value: item.user_id  
+                }));
+            }).catch((error)=> {
+                notification.setSwalAlert('error', 'Oops...', error.response.data.meta.message);
+                Swal.fire(notification.swalAlert);
+            })
+        },
+        getPeriode(){
+            let config = {
+                method: "get",
+                url: process.env.VUE_APP_BACKEND_URL_API + 'periode/user',
+                headers:{
+                    Accept: "application/json",
+                    Authorization: "Bearer " + localStorage.getItem('accessToken')
+                }
+            }
+
+            axios(config).then((response)=>{
+                this.periodeOption = response.data.data.map(item => ({
+                    text: item.tanggal_mulai + ' sd ' + item.tanggal_akhir,
+                    value: item.id
+                }))
+            })
+        },
+        updateData() {
+            Swal.fire(notification.swalLoading);
 
             let config_update = {
                 method: "put",
@@ -67,17 +126,22 @@ export default {
                     username_now: this.$props.dataEdit.username,
                     password: this.password,
                     password_konfirm: this.password_konfirm,
+                    mentor_id: this.selectedMentor,
+                    asal_instansi: this.asal_instansi,
+                    periode_id: this.periode_magang,
                     path_photo: this.path_photo,
                     role: JSON.stringify(this.role)
                 },
                 headers: {
                     Authorization: "Bearer " + localStorage.getItem('accessToken')
                 }
-            }
+            };
+
+            // Tampilkan data yang akan dikirim ke konsol
 
             axios(config_update).then((response) => {
                 let dataReponse = response.data.meta.status;
-                if(dataReponse == 'success') {
+                if (dataReponse == 'success') {
                     Swal.fire(notification.swalAlertDefaultUpdateSuccess);
                     this.$emit('closeFormRefreshTable', 'update');
                 } else {
@@ -167,6 +231,36 @@ export default {
                         placeholder="Masukkan Password Konfirmasi..."
                         v-model="password_konfirm"
                     ></BFormInput>
+                </BFormGroup>
+            </div>
+            <div class="col-6">
+                <BFormGroup label="Mentor" label-for="form-mentor" class="mb-3">
+                    <BFormSelect 
+                        id="form-mentor" 
+                        v-model="selectedMentor"
+                        label="text"
+                        item-text="name"
+                        :options="mentorOption"
+                    ></BFormSelect>
+                </BFormGroup>
+            </div>
+            <div class="col-6">
+                <BFormGroup label="Asal Instansi" label-for="form-asal-instansi" class="mb-3">
+                    <BFormInput 
+                        id="form-asal-instansi" 
+                        type="text" 
+                        placeholder="Masukkan Asal Instansi..."
+                        v-model="asal_instansi"
+                    ></BFormInput>
+                </BFormGroup>
+            </div>
+            <div class="col-12">
+                <BFormGroup label="Periode Magang" label-for="form-periode" class="mb-3">
+                    <BFormSelect 
+                        id="form-periode" 
+                        v-model="periode_magang"
+                        :options="periodeOption"
+                    ></BFormSelect>
                 </BFormGroup>
             </div>
             <div class="col-12">

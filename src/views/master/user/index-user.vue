@@ -19,6 +19,9 @@ export default {
             { width: "50px", label: "No", name: "-" },
             { width: "auto", label: "Nama User", name: "name" },
             { width: "auto", label: "Username", name: "username" },
+            { width: "auto", label: "Asal Instansi", name: "asal_instansi"},
+            { width: "auto", label: "Mentor", name: "mentor.name"},
+            { width: "auto", label: "Periode Magang", name: "periode.periode_id"},
             { width: "auto", label: "Status", name: "-" },
             { width: "auto", label: "Aksi", name: "-" },
         ]
@@ -218,7 +221,7 @@ export default {
                     Swal.close();
                 }
             });
-        }
+        },
     }
 }
 </script>
@@ -305,6 +308,10 @@ export default {
                                     </td>
                                     <td>{{ data.name }}</td>
                                     <td>{{ data.username }}</td>
+                                    <td>{{ data.asal_instansi }}</td>
+                                    <td>{{ data.mentor?.name }}</td>
+                                    <td v-if="!data.periode" style="text-align: center;">-</td>
+                                    <td v-else style="text-align: center;">{{ data.periode?.tanggal_mulai + ' sd ' + data.periode?.tanggal_akhir}}</td>
                                     <td class="text-center">
                                         <div v-if="data.status == 'ENABLE'">
                                             <span class="badge badge-pill badge-soft-success font-size-12">ENABLE</span>

@@ -16,13 +16,20 @@ export default {
             password: null,
             password_konfirm: null,
             path_photo: null,
+            asal_instansi:null,
+            mentor: null,
+            periode: null,
             role: [],
 
+            mentorOptions: [],
+            periodeOptions:[],
             referenceRole: [],
         }
     },
     async mounted(){
         await this.getReferenceRole()
+        this.getMentor()
+        this.getPeriode()
     },
     emits: ['closeFormRefreshTable'],
     methods: {
@@ -47,6 +54,48 @@ export default {
                 Swal.fire(notification.swalAlert);
             });
         },
+        getMentor(){
+            let config = {
+                method: "get",
+                url: process.env.VUE_APP_BACKEND_URL_API + 'user/mentor',
+                headers: {
+                    Accept: "application/json",
+                    Authorization: "Bearer " + localStorage.getItem('accessToken'),
+                }
+            }
+
+            axios(config).then((response) => {
+            const mentors = Array.isArray(response.data.data.data) ? response.data.data.data : [];
+            this.mentorOptions = mentors.map(mentor => ({
+                value: mentor.user_id,
+                text: mentor.name
+            }));
+               console.log(this.mentorOptions);
+
+            }).catch((error) => {
+                console.log(error);
+            });
+        },
+        getPeriode(){
+            let config = {
+                method: "get",
+                url: process.env.VUE_APP_BACKEND_URL_API + 'periode/user',
+                headers:{
+                    Accept: "application/json",
+                    Authorization: "Bearer " + localStorage.getItem('accessToken')
+                }
+            }
+
+            axios(config).then((response)=>{
+                this.periodeOptions = response.data.data.map( item => {
+                    return {
+                        value: item.id,
+                        text: item.tanggal_mulai + ' sd ' + item.tanggal_akhir
+                    }
+                })
+                console.log(this.periodeOptions);
+            })
+        },
         StoreData(){
             Swal.fire(notification.swalLoading)
 
@@ -58,6 +107,9 @@ export default {
                     username: this.username,
                     password: this.password,
                     password_konfirm: this.password_konfirm,
+                    asal_instansi: this.asal_instansi,
+                    mentor_id: this.mentor,
+                    periode_id: this.periode,
                     path_photo: this.path_photo,
                     role: JSON.stringify(this.role)
                 },
@@ -157,6 +209,36 @@ export default {
                         placeholder="Masukkan Password Konfirmasi..."
                         v-model="password_konfirm"
                     ></BFormInput>
+                </BFormGroup>
+            </div>
+            <div class="col-6">
+                <BFormGroup label="Asal Instansi" label-for="form-asal-intansi" class="mb-3">
+                    <BFormInput 
+                        id="form-asal-intansi" 
+                        type="text" 
+                        placeholder="Asal Instansi..."
+                        v-model="asal_instansi"
+                    ></BFormInput>
+                </BFormGroup>
+            </div>
+            <div class="col-6">
+                <BFormGroup label="Mentor" label-for="form-Mentor" class="mb-3">
+                    <BFormSelect
+                        id="form-periode"
+                        v-model="mentor"
+                        :options="mentorOptions"
+                        :empty="{'value': null, 'text': 'Pilih Mentor'}"
+                    />
+                </BFormGroup>
+            </div>
+            <div class="col-12">
+                <BFormGroup label="Periode" label-for="form-Periode" class="mb-3">
+                    <BFormSelect
+                        id="form-periode"
+                        v-model="periode"
+                        :options="periodeOptions"
+                        :empty="{'value': null, 'text': 'Pilih periode'}"
+                    />
                 </BFormGroup>
             </div>
             <div class="col-12">

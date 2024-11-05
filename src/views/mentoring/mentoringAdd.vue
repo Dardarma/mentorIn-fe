@@ -134,7 +134,7 @@ export default{
                 </b-form-group>
             </div>
             <div class="col-12 mt-4">
-                <b-button type="submit" @click="StoreData()" variant="primary">Simpan</b-button>
+                <b-button type="submit" variant="primary">Simpan</b-button>
                 &nbsp;
                 <b-button type="reset" variant="danger" @click="ResetData()">Reset</b-button>
             </div>
