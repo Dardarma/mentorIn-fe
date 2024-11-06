@@ -15,7 +15,7 @@ export default {
    <BRow>
     <BCol cols="12" class="mb-4">
       <h4>{{ item.title }}</h4>
-      <h6>{{ item.user.name }}</h6>
+      <h6>{{ item.mentee }}</h6>
     </BCol>
     <BCol cols="6">
       <p><strong>Tanggal: </strong>

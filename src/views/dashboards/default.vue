@@ -2,7 +2,7 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import cardItem from "./cardItem.vue";
-import ModalDetail from "./modalDetail.vue";
+
 import Profile from "@/components/widgets/profile";
 import Stat from "@/components/widgets/stat";
 import { dataMentoring } from "../mentoring/data";
@@ -17,9 +17,7 @@ export default {
        return role ? JSON.parse(role) : null
        
     },
-    isEdit(){
-      return this.activeRole.role_id == 1 || this.activeRole.role_id == 3
-    }
+
   },
   components: {
     Layout,
@@ -27,7 +25,7 @@ export default {
     Profile,
     Stat,
     cardItem,
-    ModalDetail,
+ 
 
   },
   data() {
@@ -99,20 +97,6 @@ export default {
         </BRow>
       </BCol>
     </BRow>
-
-    <BModal 
-      v-model="showModal" 
-      size="lg" 
-      scrollable title="Detail Mentoring" 
-      header-class="border-0">
-      <ModalDetail :item="selectedItem" /> 
-
-      <template #footer>
-        <BButton variant="danger" @click="showModal = false">Close</BButton>
-        <BButton @click="toedit()" class="btn btn-primary" v-if="isEdit">Edit</BButton>
-        <BButton  class="btn btn-primary" v-else>Feed Back</BButton>
-      </template>
-    </BModal>
 
   </Layout>
 </template>
