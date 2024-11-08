@@ -5,6 +5,7 @@ export default {
   props: ["item"], 
   mounted() {
     this.item
+    console.log(this.item)
   },
   
 };
@@ -14,16 +15,16 @@ export default {
   <div v-if="item">
    <BRow>
     <BCol cols="12" class="mb-4">
-      <h4>{{ item.title }}</h4>
-      <h6>{{ item.mentee }}</h6>
+      <h4> {{ item.materi.description }} </h4>
+      <h6>{{ item.user.name }}</h6>
     </BCol>
     <BCol cols="6">
       <p><strong>Tanggal: </strong>
-      {{ item.Tanggal }}</p>
+      {{ item.tanggal_mentoring }}</p>
     </BCol>
     <BCol cols="6">
       <p><strong>Jam:  </strong>
-      {{ item.jam }}</p>
+      {{ item.jam_mentoring }}</p>
     </BCol>
     <BCol cols="12">
      <strong>Materi</strong>
@@ -31,19 +32,19 @@ export default {
     </BCol>
     <BCol cols="12">
       <strong>To-Do Past:</strong>
-      <p>{{ item.todopast }}</p>
+      <p>{{ item.todo.todo || "-" }}</p>
     </BCol>
     <BCol cols="12">
       <strong>To-Do Pre:</strong>
-      <p>{{ item.todopre }}</p>
+      <p>{{ item.hasil[0].todo.todo || "-" }}</p>
     </BCol>
     <BCol cols="12">
       <strong>Hasil:</strong>
-      <p>{{ item.Hasil }}</p>
+      <p>{{ item?.hasil[0].hasil || "-" }}</p>
     </BCol>
     <BCol cols="12">
       <strong>Feedback:</strong>
-      <p>{{ item.feedback }}</p>
+      <p>{{ item?.hasil[0].feedback || "-"}}</p>
     </BCol>
    </BRow>
   </div>

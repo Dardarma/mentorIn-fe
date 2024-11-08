@@ -51,7 +51,7 @@ export default {
                 PaginationLinks: null
            },
            tableData:{
-                UrlDataTable : process.env.VUE_APP_BACKEND_URL_API + 'jadwal/index',
+                UrlDataTable : process.env.VUE_APP_BACKEND_URL_API + 'jadwal',
                 DrawTable: 0,
                 LoadingTable: false,
                 DataTable: [],

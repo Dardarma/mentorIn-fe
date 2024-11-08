@@ -1,11 +1,12 @@
 <script>
 import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
+import axios from "axios";
+import Swal from "sweetalert2";
 // import { dataMentoring } from "./data";
-// import axios from "axios";
 
-// import { useNotificationStore } from "@/state/pinia";
-// const notification = useNotificationStore();
+import { useNotificationStore } from "@/state/pinia";
+const notification = useNotificationStore();
 
 export default {
     name: "MentoringEdit",
@@ -32,16 +33,62 @@ export default {
                 feedback:'',
                 jadwal:'',
                 todo:''
-            }
+            },
+            idHasil:0,
         }
     },
     methods: {
         updateJadwal(){
-            
-        }
-    },
+            Swal.fire(notification.swalLoading);
+
+            let config ={
+                method: "put",
+                url: `${process.env.VUE_APP_BACKEND_URL_API}jadwal/update/${this.$route.params.id}`,
+                headers: {
+                    Accept: "application/json",
+                    Authorization: "Bearer " + localStorage.getItem("accessToken")
+                },
+                data: {
+                    todo: this.itemJadwal.todo,
+                    materi: this.itemJadwal.materi,
+                    mentor_id: this.itemJadwal.mentor_id,
+                    tanggal_mentoring: this.itemJadwal.tanggal_mentoring,
+                    jam_mentoring: this.itemJadwal.jam_mentoring,
+                    user_id: this.itemJadwal.user_id,
+                    deskripsi: this.itemJadwal.deskripsi
+                }
+            }
+
+            axios(config).then((response)=>{
+               let dataResponse = response.data.meta.status;
+               if(dataResponse == 'success'){
+                   Swal.fire(notification.swalAlertDefaultUpdateSuccess);
+                   this.$router.push({name: 'MentoringIndex'});
+                }else{
+                    Swal.fire(notification.swalAlertDefaultUpdateError);
+                }
+            })
+            },
+            getJadwal(){
+                let config = {
+                    method: "get",
+                    url: `${process.env.VUE_APP_BACKEND_URL_API}jadwal/getid/${this.$route.params.id}`,
+                    headers:{
+                        Accept: "aplication/json",
+                        Authorization: "Bearer " + localStorage.getItem("accessToken")
+                    }
+                }
+
+            axios(config).then((response)=>{
+                let dataResponse = response.data.data;
+                    console.log(dataResponse);
+              
+            })
+        },
+        },
     mounted() {
-        this.isiMentoring();
+        // this.isiMentoring();
+        this.getJadwal();
     }
 }
 </script>
@@ -98,7 +145,7 @@ export default {
                                 </BCol>
                                 <BCol cols="12" class="mt-4">
                                     <Label>To Do Sebelum Mentoring</Label>
-                                    <BFormTextarea placeholder="Materi" v-model="item.todoBefore" rows="3" />
+                                    <!-- <BFormTextarea placeholder="Materi" v-model="item.todoBefore" rows="3" /> -->
                                 </BCol>
                             </BRow>
                        </BForm>
@@ -119,15 +166,15 @@ export default {
                         <BBRow>
                             <BCol cols="12" class="mt-4">
                                 <Label>To Do Setelah Mentoring</Label>
-                                <BFormTextarea placeholder="Materi" v-model="item.todoAfter" rows="3" :disabled="!item.status"/>
+                                <!-- <BFormTextarea placeholder="Materi" v-model="item.todoAfter" rows="3" :disabled="!item.status"/> -->
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Hasil Mentoring</Label>
-                                <BFormTextarea placeholder="Hasil Mentoring" v-model="item.hasil" rows="5" :disabled="!item.status"/>
+                                <!-- <BFormTextarea placeholder="Hasil Mentoring" v-model="item.hasil" rows="5" :disabled="!item.status"/> -->
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Feedback</Label>
-                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" disabled/>
+                                <!-- <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" disabled/> -->
                             </BCol>
                         </BBRow>
                     </BCardBody>

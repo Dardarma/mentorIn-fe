@@ -4,11 +4,16 @@ import axios from "axios";
 import {useNotificationStore} from '@/state/pinia'
 const nottification = useNotificationStore()
 
+import ModalDetail from "./modalDetail.vue"; 
+
 
 
 export default {
     name: "CardItem",
     props: ["cardItem"],
+    components: {
+        ModalDetail
+    },
     data() {
         return {
           pagination:{
@@ -21,6 +26,7 @@ export default {
           },
 
           showModal: false,
+          selectedItem: null,
 
         };
     },
@@ -32,7 +38,7 @@ export default {
             Swal.fire(nottification.swalLoading)
             let config = {
                 method: "get",
-                url: `${process.env.VUE_APP_BACKEND_URL_API}jadwal/index?page=${page}`,
+                url: `${process.env.VUE_APP_BACKEND_URL_API}jadwal?page=${page}`,
                 headers: {
                     Accept: "application/json",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -49,13 +55,29 @@ export default {
             })
         },
         truncateText(text){
-            return text.length > 20 ? text.substring(0,20) + "..." : text
+            return text ? (text.length > 20 ? text.substring(0, 20) + "..." : text) : "-";
         },
         openModal(itemId){
             this.selectedItem = this.tabledata.find((item) => item.id === itemId);
             this.showModal = true;
+        },
+        showModalDetail(item){
+            this.selectedItem = item
+            this.showModal = true
+        },
+        toedit(){
+            this.$router.push({name: 'mentorring-edit', params: {id: this.selectedItem.id}})
         }
-
+    },
+    computed:{
+        activeRole(){
+            const role = localStorage.getItem('activeRole')
+            return role ? JSON.parse(role) : null
+       
+        },
+        isEdit(){
+            return this.activeRole.role_id == 1 || this.activeRole.role_id == 3
+        },
     }
 };
 </script>
@@ -95,16 +117,16 @@ export default {
                                         <div class="p-2">
                                             <strong>Materi:</strong>
                                             <p>{{ truncateText(card.materi.description) }}</p>
-                                            <!-- <strong>To-Do Past:</strong> 
-                                            <p>{{ truncateText(card.todopast) }}</p>
+                                            <strong>To-Do Past:</strong> 
+                                            <p>{{ truncateText(card.todo.todo) }}</p>
                                             <strong>To-Do Pre:</strong> 
-                                            <p>{{ truncateText(card.todopre) }}</p> -->
+                                            <p>{{ truncateText(card.hasil[0].todo.todo) }}</p>
                                             <strong>Hasil:</strong> 
-                                            <p>{{ card?.hasil?.hasil }}</p>
+                                            <p>{{ truncateText(card?.hasil[0].hasil) }}</p>
                                             <strong>Feedback:</strong>
-                                            <p>{{card?.hasil?.feedback }}</p>
+                                            <p>{{truncateText(card?.hasil[0].feedback) }}</p>
                                             <div>
-                                                <BLink  class="text-primary">
+                                                <BLink  class="text-primary" @click="showModalDetail(card)">
                                                   Read more <i class="mdi mdi-arrow-right"></i>
                                                 </BLink>
                                             </div>
@@ -121,7 +143,7 @@ export default {
                                 &lt;
                                 </button>
 
-                                <span>Page {{ pagination.current_page }} of {{ Math.ceil(pagination.total / pagination.per_page) }}</span>
+                                <span> Page {{ pagination.current_page }} of {{ Math.ceil(pagination.total / pagination.per_page) }} </span>
 
                                 <button 
                                     @click="getData(pagination.current_page + 1)"
@@ -144,9 +166,9 @@ export default {
         <ModalDetail :item="selectedItem" /> 
 
         <template #footer>
-            <BButton variant="danger" @click="showModal = false">Close</BButton>
+            <BButton variant="danger" @click="showModalDetail = false">Close</BButton>
             <BButton @click="toedit()" class="btn btn-primary" v-if="isEdit">Edit</BButton>
-            <BButton  class="btn btn-primary" v-else>Feed Back</BButton>
+            <BButton  class="btn btn-primary" >Feed Back</BButton>
         </template>
     </BModal>
     </div>
