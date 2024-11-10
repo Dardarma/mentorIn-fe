@@ -2,10 +2,14 @@
 import Layout from "../../layouts/main";
 import PageHeader from "@/components/page-header";
 import cardItem from "./cardItem.vue";
+import Swal from "sweetalert2";
 
 import Profile from "@/components/widgets/profile";
-import Stat from "@/components/widgets/stat";
 import { dataMentoring } from "../mentoring/data";
+
+import { useNotificationStore } from '@/state/pinia'
+import axios from "axios";
+const notification = useNotificationStore()
 
 /**
  * Dashboard Component
@@ -23,7 +27,6 @@ export default {
     Layout,
     PageHeader,
     Profile,
-    Stat,
     cardItem,
  
 
@@ -54,13 +57,21 @@ export default {
       bgColor: "#ffffff",
       height: 128,
       width: 128,
-      timeout: 3000, //ms
+      timeout: 3000,
       fetchingStats: true,
       selectedItem: null,
+      mentoring_bulan:[]
 
-    };
+      
+
+    }
   },
-  mounted() {},
+
+  mounted() {
+
+    this.getNotifikasi();
+    this.getBulan();
+  },
   methods: {
     openModal(itemId) {
       this.selectedItem = this.tabledata.find((item) => item.id === itemId);
@@ -70,11 +81,56 @@ export default {
       const idAsString = this.selectedItem.id.toString();
       this.$router.push({ name: 'mentorring-edit', params: { id: idAsString } });
     },
-    getJadwal(){
-      
+   getNotifikasi(){
+    Swal.fire(notification.swalLoading);
+        let config = {
+          method: "get",
+          url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/notifikasi',
+          headers: {
+              Accept: "application/json",
+              Authorization: "Bearer " + localStorage.getItem("accessToken")
+          }
+        }
+
+        axios(config).then((response)=>{
+          let dataResponse = response.data;
+          if(dataResponse.meta.status === "success" && dataResponse.data.length > 0){
+              let listJadwal = dataResponse.data.map((jadwal) => {
+                return `${jadwal.user.name} - ${jadwal.jam_mentoring}`;
+              }).join("");
+          Swal.fire({
+                icon: 'info',
+                title: 'Mentoring Besok',
+                html: `<ul>${listJadwal}</ul>`, // Menampilkan daftar kegiatan dalam bentuk list
+                confirmButtonText: 'OK'
+        })
+      }else{
+        console.log(dataResponse)
+      }
+      }
+   )},
+   getBulan(){
+    let config ={
+      method: "get",
+      url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/bulan',
+      headers:{
+        Accept: "application/json",
+        Authorization: "Bearer " + localStorage.getItem('accessToken')
+      }
     }
-  },
-};
+
+    axios (config).then((response)=>{
+        this.mentoring_bulan = response.data.data
+      console.log(this.mentoring_bulan)
+    }).catch((error)=>{
+      console.error("mentoring Blan",error)
+    })
+   },
+   getProgerss(jumlahJadwal){
+    return (jumlahJadwal/2) *100
+   }
+   }}
+
 </script>
 
 <template>
@@ -83,9 +139,17 @@ export default {
     <BRow>
       <BCol xl="4">
         <Profile :updating="fetchingStats" />
-        <BCol v-for="stat of statData" :key="stat.icon">
-          <Stat :icon="stat.icon" :title="stat.title" :value="stat.value" />
-        </BCol>
+        <Bcol>
+          <div v-for="(mentoring, index) in mentoring_bulan" :key="index">
+              <BCard>
+                <h5>Progress Mentoring Bulan ini</h5>
+              {{ mentoring.nama_user }}
+              <BProgress
+              :value="getProgerss(mentoring.jumlah_jadwal)"
+              />
+              </BCard>
+          </div>
+        </Bcol>
       </BCol>
       
       <BCol xl="8">

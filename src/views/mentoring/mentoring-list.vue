@@ -122,6 +122,40 @@ export default {
             this.showModalAdd = false;
             this.getTableData();
         },
+        async deleteData(id){
+            Swal.fire({
+                title: "Yakin Dek?",
+                showCancelButton: true,
+                showConfirmButton: true,
+                confirmButtonText: "Ya",
+                cancelButtonText: "Tidak",
+                icon: "warning"
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    let config = {
+                        method: "delete",
+                        url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/delete/' + id,
+                        headers:{
+                            Accept: "aplication/json",
+                            Authorization: "Bearer " + localStorage.getItem("accessToken")
+                        }
+                    }
+
+                    await axios(config).then((response)=>{
+                        let dataResponse = response.data.meta.status;
+                        if(dataResponse === 'success'){
+                            Swal.fire(notification.swalAlertDefaultDeleteSuccess);
+                            this.getTableData();
+                        } else {
+                            Swal.fire(notification.swalAlertDefaultDeleteError);
+                        }
+                    }).catch((error)=>{
+                        notification.setSwalAlert("error", "Halah...", error.response.data.meta.message);
+                        Swal.fire(notification.swalAlert);
+                    })
+                }
+            })
+        }
 
         
     }
@@ -206,13 +240,13 @@ export default {
                                 <td>{{ data.tanggal_mentoring  }}</td>
                                 <td>{{ data.jam_mentoring }}</td>
                                 <td>{{ data.materi.materi || 'N/A' }}</td>
-                                <td>{{ data.materi.status ? 'Terlaksana' : 'Belum Terlaksana' }}</td>
+                                <td>{{ data.status ? 'Terlaksana' : 'Belum Terlaksana' }}</td>
                                 <td>
                                     <button type="button" class="btn btn-warning btn-sm mx-1" @click="(edit(data.id))">
                                         <i class="bx bx-edit-alt font-size-16 align-middle me-1"></i>
                                     </button>
                                     <button type="button" class="btn btn-danger btn-sm">
-                                        <i class="bx bx-trash font-size-16 align-middle me-1"></i> 
+                                        <i class="bx bx-trash font-size-16 align-middle me-1" @click="(deleteData(data.id))"></i> 
                                     </button>
                                     <button type="button" class="btn btn-primary btn-sm mx-1">
                                         <i class='bx bxs-show font-size-16 align-middle me-1' @click="showdetail(data)"></i>

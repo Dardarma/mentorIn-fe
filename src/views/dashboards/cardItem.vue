@@ -120,11 +120,11 @@ export default {
                                             <strong>To-Do Past:</strong> 
                                             <p>{{ truncateText(card.todo.todo) }}</p>
                                             <strong>To-Do Pre:</strong> 
-                                            <p>{{ truncateText(card.hasil[0].todo.todo) }}</p>
+                                            <p>{{ truncateText(card?.hasil?.todo?.todo)}}</p>
                                             <strong>Hasil:</strong> 
-                                            <p>{{ truncateText(card?.hasil[0].hasil) }}</p>
+                                            <p>{{ truncateText(card?.hasil?.hasil) }}</p>
                                             <strong>Feedback:</strong>
-                                            <p>{{truncateText(card?.hasil[0].feedback) }}</p>
+                                            <p>{{truncateText(card?.hasil?.feedback )}}</p>
                                             <div>
                                                 <BLink  class="text-primary" @click="showModalDetail(card)">
                                                   Read more <i class="mdi mdi-arrow-right"></i>
@@ -168,7 +168,8 @@ export default {
         <template #footer>
             <BButton variant="danger" @click="showModalDetail = false">Close</BButton>
             <BButton @click="toedit()" class="btn btn-primary" v-if="isEdit">Edit</BButton>
-            <BButton  class="btn btn-primary" >Feed Back</BButton>
+            <BButton  class="btn btn-primary"  v-else>Feed Back</BButton>
+      
         </template>
     </BModal>
     </div>

@@ -36,15 +36,15 @@ export default {
     </BCol>
     <BCol cols="12">
       <strong>To-Do Pre:</strong>
-      <p>{{ item.hasil[0].todo.todo || "-" }}</p>
+      <p>{{ item?.hasil?.todo?.todo || "-" }}</p>
     </BCol>
     <BCol cols="12">
       <strong>Hasil:</strong>
-      <p>{{ item?.hasil[0].hasil || "-" }}</p>
+      <p>{{ item?.hasil?.hasil || "-" }}</p>
     </BCol>
     <BCol cols="12">
       <strong>Feedback:</strong>
-      <p>{{ item?.hasil[0].feedback || "-"}}</p>
+      <p>{{ item?.hasil?.feedback || "-"}}</p>
     </BCol>
    </BRow>
   </div>
