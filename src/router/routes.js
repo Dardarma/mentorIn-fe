@@ -110,7 +110,7 @@ export default [
     component: () => import("../views/mentoring/mentoring-list.vue")
   },
   {
-    path: "/mentorring/edit/:id",
+    path: "/mentorring/:mode/:id",
     name: "mentorring-edit",
     meta: { title: "Mentorring Edit", authRequired: true },
     component: () => import("../views/mentoring/mentoringEdit.vue")  

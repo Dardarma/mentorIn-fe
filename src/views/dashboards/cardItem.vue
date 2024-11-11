@@ -65,8 +65,11 @@ export default {
             this.selectedItem = item
             this.showModal = true
         },
-        toedit(){
-            this.$router.push({name: 'mentorring-edit', params: {id: this.selectedItem.id}})
+        toedit(modes){
+            this.$router.push({
+                name: 'mentorring-edit', 
+                params: {id: this.selectedItem.id, mode: modes}
+            })
         }
     },
     computed:{
@@ -78,6 +81,9 @@ export default {
         isEdit(){
             return this.activeRole.role_id == 1 || this.activeRole.role_id == 3
         },
+        isFeedBack(){
+            return this.activeRole.role_id == 2
+        }
     }
 };
 </script>
@@ -167,8 +173,8 @@ export default {
 
         <template #footer>
             <BButton variant="danger" @click="showModalDetail = false">Close</BButton>
-            <BButton @click="toedit()" class="btn btn-primary" v-if="isEdit">Edit</BButton>
-            <BButton  class="btn btn-primary"  v-else>Feed Back</BButton>
+            <BButton @click="toedit('edit')" class="btn btn-primary" v-if="isEdit">Edit</BButton>
+            <BButton @click="toedit('feedback')" class="btn btn-primary"  v-if="isFeedBack">Feed Back</BButton>
       
         </template>
     </BModal>

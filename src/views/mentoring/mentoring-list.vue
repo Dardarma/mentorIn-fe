@@ -112,7 +112,7 @@ export default {
             this.getTableData();
         },
         edit(id){
-            this.$router.push({ name: 'mentorring-edit', params: { id: id } });
+            this.$router.push({ name: 'mentorring-edit', params: { id: id , mode: 'edit'}});
         },
         showdetail(data){
             this.selectedData = data;

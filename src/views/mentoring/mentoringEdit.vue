@@ -3,7 +3,6 @@ import Layout from "@/layouts/main";
 import PageHeader from "@/components/page-header";
 import axios from "axios";
 import Swal from "sweetalert2";
-// import { dataMentoring } from "./data";
 
 import { useNotificationStore } from "@/state/pinia";
 const notification = useNotificationStore();
@@ -20,7 +19,7 @@ export default {
                 { value: true, text: "Selesai" },
                 { value: false, text: "Belum Selesai" }
             ],
-            user_name: "",
+            
            item: {
              tanggal_mentoring: "",
              jam_mentoring: "",
@@ -31,8 +30,11 @@ export default {
              hasil: "",
              feedback: "",
              todo_pst: "",
-             status: false
-           }
+             status: false,
+             mentee: ""
+            },
+            mode: this.$route.params.mode,
+            menteeOptions: []
         }
     },
     methods: {
@@ -58,7 +60,8 @@ export default {
                     hasil: this.item.hasil,
                     feedback: this.item.feedback,
                     todo_pst: this.item.todo_pst,
-                    status: this.item.status
+                    status: this.item.status,
+                    mentee: this.item.mentee
                 }
             };
 
@@ -90,34 +93,66 @@ export default {
             this.item = {
                     tanggal_mentoring: data.data.tanggal_mentoring,
                     jam_mentoring: data.data.jam_mentoring,
-                    user_id: data.data.user_id,
+                    mentee: data.data.user_id,
                     todo: data?.data?.todo?.todo,
                     materi: data?.data?.materi?.materi,
                     deskripsi: data?.data?.materi?.description,
                     hasil: data?.data?.hasil?.hasil,  
                     feedback: data?.data?.hasil?.feedback,
                     todo_pst: data?.data?.hasil?.todo?.todo,
+                    status: data.data.status
             }
-            this.user_name = data.data.user.name;
             Swal.close();
             console.log(this.item);
             }
             else{
                 Swal.fire(notification.swalAlertDefaultError);
-            }   
-        }
-    );
+            }  
+    });
+    },
+    getMentee() {
+        let config = {
+            method: 'get',
+            url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/mente',
+            headers: {
+                Accept: 'application/json',
+                Authorization: "Bearer " + localStorage.getItem('accessToken')
+            }
+        };
+
+        axios(config)
+        .then((response) => {
+            this.menteeOptions = response.data.map((mentee) => ({
+                value: mentee.user_id,
+                text: mentee.name  
+            }));
+            console.log(this.menteeOptions);
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
     }
 
     },
     mounted() {
         this.getJadwal();
+        this.getMentee();
+    },
+    computed: {
+        isEdit() {
+            return this.$route.params.mode === "edit";
+        },
+        isFeedback() {
+            return this.$route.params.mode === 'feedback';
+        }
     }
+    
 }
 </script>
 <template>
     <Layout>
-        <PageHeader title="Tambah Mentoring" pageTitle="Mentoring"/>
+        <PageHeader :title="mode" pageTitle="Mentoring"/>
 
        <BCard>
             <BCardHeader>
@@ -125,71 +160,59 @@ export default {
                     <BCol cols="1">
                         <BButton @click="(this.$router.go(-1))" class="btn btn-secondary">&lt;</BButton>
                     </BCol>
-                        <BCol cols="8">
-                            <h2>Form Edit</h2>
+                        <BCol cols="6">
+                            <h2>Form {{ mode }}</h2>
                         </BCol>
-                    <hr/>
+                        <BCol cols="4" class="text-end">
+                                <BButton variant="success" @click="updateJadwal()">simpan</BButton>
+                        </BCol>
                 </BRow>
             </BCardHeader>
             <BCardBody>
-                <BCard>
-                    <BCardHeader>
-                        <BRow>
-                            <BCol cols="6">
-                                Informasi Jadwal
-                            </BCol>
-                            <BCol cols="6" class="text-end">
-                                <BButton variant="success" @click="updateJadwal()">simpan</BButton>
-                            </BCol>
-                        </BRow>
-                    </BCardHeader>
-                    <BCardBody>
                         <BForm v-if="item">
                             <BRow>
                                 <BCol cols="6" class="mt-4">
-                                    Nama Mentee: <br/>
-                                    <h2>{{user_name}}</h2>
+                                    <Label>Mentee </Label>
+                                    <BFormSelect id="namaMentee" v-model="item.mentee" :options="menteeOptions" />
                                 </BCol>
                                 <BCol cols="6" class="mt-4">
                                     <Label>Status</Label>
-                                    <BFormSelect :options="optionsStatus" v-model="item.status"/>
+                                    <BFormSelect :options="optionsStatus" v-model="item.status" :disabled="isFeedback"/>
                                 </BCol>
                                 <BCol cols="6" class="mt-4" >
                                     <Label>Tanggal</Label>
-                                    <BFormInput type="date" v-model="item.tanggal_mentoring" />   
+                                    <BFormInput type="date" v-model="item.tanggal_mentoring" :disabled="isFeedback"/>   
                                 </BCol>
                                 <BCol cols="6" class="mt-4">
                                     <Label>Waktu</Label>
-                                    <BFormInput type="time" v-model="item.jam_mentoring" />
+                                    <BFormInput type="time" v-model="item.jam_mentoring" :disabled="isFeedback"/>
                                 </BCol>
                                 <BCol cols="12" class="mt-4">
                                     <Label>Materi</Label>
-                                    <BFormInput placeholder="Materi" v-model="item.materi" rows="3" />
+                                    <BFormInput placeholder="Materi" v-model="item.materi" rows="3" :disabled="isFeedback"/>
                                 </BCol>
                                 <BCol cols="12" class="mt-4">
                                     <Label>Materi</Label>
-                                    <BFormTextarea placeholder="Materi" v-model="item.deskripsi" rows="3" />
+                                    <BFormTextarea placeholder="Materi" v-model="item.deskripsi" rows="3" :disabled="isFeedback"/>
                                 </BCol>
                                 <BCol cols="12" class="mt-4">
                                     <Label>To Do Sebelum Mentoring</Label>
-                                    <BFormTextarea placeholder="Materi" v-model="item.todo" rows="3" />
+                                    <BFormTextarea placeholder="Materi" v-model="item.todo" rows="3" :disabled="isFeedback"/>
                                 </BCol>
                                 <BCol cols="12" class="mt-4">
                                 <Label>To Do Setelah Mentoring</Label>
-                                <BFormTextarea placeholder="Materi" v-model="item.todo_pst" rows="3" :disabled="!item.status"/>
+                                <BFormTextarea placeholder="Materi" v-model="item.todo_pst" rows="3" :disabled="!item.status || isFeedback"/>
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Hasil Mentoring</Label>
-                                <BFormTextarea placeholder="Hasil Mentoring" v-model="item.hasil" rows="5" :disabled="!item.status"/>
+                                <BFormTextarea placeholder="Hasil Mentoring" v-model="item.hasil" rows="5" :disabled="!item.status || isFeedback"/>
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Feedback</Label>
-                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" disabled/>
+                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" :disabled="!item.status || isEdit"/>
                             </BCol>
                             </BRow>
                        </BForm>
-                    </BCardBody>
-                </BCard>
             </BCardBody>
         </BCard>
     </Layout>
