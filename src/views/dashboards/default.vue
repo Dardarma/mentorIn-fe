@@ -60,15 +60,11 @@ export default {
       timeout: 3000,
       fetchingStats: true,
       selectedItem: null,
-      mentoring_bulan:[]
-
-      
-
+      mentoring_bulan:[],
     }
   },
 
   mounted() {
-
     this.getNotifikasi();
     this.getBulan();
   },
@@ -128,8 +124,10 @@ export default {
    },
    getProgerss(jumlahJadwal){
     return (jumlahJadwal/2) *100
-   }
-   }}
+   },
+
+
+  }}
 
 </script>
 
