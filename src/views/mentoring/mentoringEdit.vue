@@ -31,10 +31,11 @@ export default {
              feedback: "",
              todo_pst: "",
              status: false,
-             mentee: ""
             },
             mode: this.$route.params.mode,
-            menteeOptions: []
+            user_name: "",
+            menteeOptions: [],
+            role : localStorage.getItem('activeRole.role_id')
         }
     },
     methods: {
@@ -61,7 +62,6 @@ export default {
                     feedback: this.item.feedback,
                     todo_pst: this.item.todo_pst,
                     status: this.item.status,
-                    mentee: this.item.mentee
                 }
             };
 
@@ -93,7 +93,7 @@ export default {
             this.item = {
                     tanggal_mentoring: data.data.tanggal_mentoring,
                     jam_mentoring: data.data.jam_mentoring,
-                    mentee: data.data.user_id,
+                    user_id: data.data.user_id,
                     todo: data?.data?.todo?.todo,
                     materi: data?.data?.materi?.materi,
                     deskripsi: data?.data?.materi?.description,
@@ -102,6 +102,7 @@ export default {
                     todo_pst: data?.data?.hasil?.todo?.todo,
                     status: data.data.status
             }
+            this.user_name = data.data.user.name;
             Swal.close();
             console.log(this.item);
             }
@@ -145,6 +146,14 @@ export default {
         },
         isFeedback() {
             return this.$route.params.mode === 'feedback';
+        },
+        activeRole(){
+            const role = localStorage.getItem('activeRole')
+            return role ? JSON.parse(role) : null
+       
+        },
+        isMentor(){
+            return this.activeRole.role_id == 3
         }
     }
     
@@ -171,9 +180,14 @@ export default {
             <BCardBody>
                         <BForm v-if="item">
                             <BRow>
-                                <BCol cols="6" class="mt-4">
+                                <BCol cols="6" class="mt-4" v-if="isMentor">
                                     <Label>Mentee </Label>
-                                    <BFormSelect id="namaMentee" v-model="item.mentee" :options="menteeOptions" />
+                                    <BFormSelect id="namaMentee" v-model="item.user_id" :options="menteeOptions" />
+                                </BCol>
+                                <BCol cols="6" class="mt-4" else>
+                                    <Label>Mentee </Label>
+                                    <h4>{{  user_name }}</h4>
+                                    <BFormInput  v-model="item.user_id" hidden/>
                                 </BCol>
                                 <BCol cols="6" class="mt-4">
                                     <Label>Status</Label>
@@ -209,7 +223,7 @@ export default {
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Feedback</Label>
-                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" :disabled="!item.status || isEdit"/>
+                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" :disabled="!item.status && isEdit"/>
                             </BCol>
                             </BRow>
                        </BForm>

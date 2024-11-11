@@ -321,25 +321,13 @@ export default {
                                         </div>
                                     </td>
                                     <td>
-                                        <div v-if="data.status == 'ENABLE'">
-                                            <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                <button type="button" class="btn btn-info btn-sm" v-on:click="showFormModal('edit', data)">
-                                                    <i class="bx bx-edit font-size-16 align-middle me-1"></i> Edit
-                                                </button>
-                                                <button type="button" class="btn btn-warning btn-sm" v-on:click="changeStatus('DISABLE', data)">
-                                                    <i class="bx bxs-error font-size-16 align-middle me-1"></i> Disable
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div v-else>
-                                            <div class="d-flex flex-wrap justify-content-center gap-2">
-                                                <button type="button" class="btn btn-success btn-sm" v-on:click="changeStatus('ENABLE', data)">
-                                                    <i class="bx bx-check-double font-size-16 align-middle me-1"></i> Enable
-                                                </button>
-                                                <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteData(data)">
-                                                    <i class="bx bx-trash-alt font-size-16 align-middle me-1"></i> Hapus
-                                                </button>
-                                            </div>
+                                        <div class="d-flex flex-wrap justify-content-center gap-2">
+                                            <button type="button" class="btn btn-info btn-sm" v-on:click="showFormModal('edit', data)">
+                                                <i class="bx bx-edit font-size-16 align-middle me-1"></i> Edit
+                                            </button>
+                                            <button type="button" class="btn btn-danger btn-sm" v-on:click="deleteData(data)">
+                                                <i class="bx bx-trash-alt font-size-16 align-middle me-1"></i> Hapus
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
