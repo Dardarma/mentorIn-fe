@@ -184,7 +184,7 @@ export default {
                                     <Label>Mentee </Label>
                                     <BFormSelect id="namaMentee" v-model="item.user_id" :options="menteeOptions" />
                                 </BCol>
-                                <BCol cols="6" class="mt-4" else>
+                                <BCol cols="6" class="mt-4" v-else>
                                     <Label>Mentee </Label>
                                     <h4>{{  user_name }}</h4>
                                     <BFormInput  v-model="item.user_id" hidden/>
