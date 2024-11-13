@@ -23,7 +23,7 @@ export default {
     data() {
         const columnData = [
             { width: "50px", label: "No", name: "-" },
-            { width: "auto", label: "Nama Mentee", name: "name" },
+            { width: "auto", label: "Nama Mentee", name: "mente" },
             { width: "auto", label: "Tanggal", name: "tanggal_mentoring" },
             { width: "auto", label: "Jam", name: "jam_mentoring" },
             { width: "auto", label: "Materi", name: "materi" },
@@ -55,15 +55,24 @@ export default {
                 DrawTable: 0,
                 LoadingTable: false,
                 DataTable: [],
+                filter_status: true,
+                filter_mentee: ''
            },
             showModalAdd: false,
             showModalDetail: false,
+            statusOptions: [
+                { value: true, text: "Terlaksana" },
+                { value: false, text: "Belum Terlaksana" }
+            ],
+            menteeOptions: []
+
         }
     },
     mounted(){
         this.getTableData();
+        this.getMentee();
     },
-    emits: ['closeFormRefreshTable'],
+    emits: ['dataTableAction','closeFormRefreshTable'],
     methods:{
         async getTableData(){
             this.tableData.DrawTable++;
@@ -77,12 +86,16 @@ export default {
                     search: this.tableHeadPagination.SearchData,
                     sort_field: this.tableHeadPagination.SortKey,
                     sort_order: this.tableHeadPagination.SortOrderDir,
+                    status: this.tableData.filter_status,
+                    mente: this.tableData.filter_mentee
                 },
                 headers: {
                     Accept: "application/json",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
                 }
             }
+
+            console.log('params yang dikirim', config.params);
 
             await axios(config).then((response)=>{
                 const responseData = response.data.data;
@@ -92,7 +105,8 @@ export default {
                 this.tableHeadPagination.PageTo = responseData.to;
                 this.tableHeadPagination.PageTotal = responseData.total;
                 this.tableHeadPagination.CurrentPage = responseData.current_page;
-                this.tableHeadPagination.PaginationLinks = responseData.links
+                this.tableHeadPagination.PaginationLinks = responseData.links;
+
                 console.log(responseData);
             }).catch(( error) => {
                 notification.setSwalAlert("error", "Halah...", error.response.data.meta.message);
@@ -121,6 +135,29 @@ export default {
         async closeFormRefreshTable(){
             this.showModalAdd = false;
             this.getTableData();
+        },
+        getMentee() {
+            let config = {
+                method: 'get',
+                url: process.env.VUE_APP_BACKEND_URL_API + 'mente/mente',
+                headers: {
+                    Accept: 'application/json',
+                    Authorization: "Bearer " + localStorage.getItem('accessToken')
+                }
+            };
+
+            axios(config)
+            .then((response) => {
+                this.menteeOptions = response.data.map((mentee) => ({
+                    value: mentee.user_id,
+                    text: mentee.name  
+                }));
+                console.log(this.menteeOptions);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+
         },
         async deleteData(id){
             Swal.fire({
@@ -177,28 +214,10 @@ export default {
                         <div class="col">
                             <div class="row">
                                 <div class="col-3">
-                                    <BFormGroup class="mb-3" label="Status" label-for="filter-status">
-                                        <select class="form-select" id="filter-status">
-                                            <option value="TERLAKSANA">TERLAKSANA</option>
-                                            <option value="BELUM DILAKSANAKAN">BELUM DILAKSANAKAN</option>
-                                        </select>
-                                    </BFormGroup>
+                                    <BFormSelect :options="statusOptions" v-model="tableData.filter_status" v-on:change="getTableData()"/>
                                 </div>
                                 <div class="col-3">
-                                    <BFormGroup class="mb-3" label="Mentee" label-for="filter-mentee">
-                                        <select class="form-select" id="filter-status">
-                                            <option value="TERLAKSANA">TERLAKSANA</option>
-                                            <option value="BELUM DILAKSANAKAN">BELUM DILAKSANAKAN</option>
-                                        </select>
-                                    </BFormGroup>
-                                </div>
-                                <div class="col-3">
-                                    <BFormGroup class="mb-3" label="Tanggal" label-for="filter-tanggal">
-                                        <select class="form-select" id="filter-status">
-                                            <option value="TERLAKSANA">TERLAKSANA</option>
-                                            <option value="BELUM DILAKSANAKAN">BELUM DILAKSANAKAN</option>
-                                        </select>
-                                    </BFormGroup>
+                                    <BFormSelect id="namaMentee" v-model="tableData.filter_mentee" :options="menteeOptions" />
                                 </div>
                             </div>
                         </div>
@@ -234,7 +253,7 @@ export default {
                             <tr v-else-if="tableData.DataTable == ''">
                                 <td class="text-center" :colspan="tableHeadPagination.Column.length">Data Tidak Tersedia</td>
                             </tr>
-                            <tr v-else v-for="(data, index) in tableData.DataTable" :key="data.id">
+                            <tr v-else v-for="(data, index) in tableData.DataTable" :key="index">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ data.user.name || 'N/A'}}</td>
                                 <td>{{ data.tanggal_mentoring  }}</td>

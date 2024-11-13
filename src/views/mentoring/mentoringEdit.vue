@@ -45,7 +45,7 @@ export default {
 
             let configUpdate = {
                 method: "put",
-                url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/update/' + this.$route.params.id,
+                url: process.env.VUE_APP_BACKEND_URL_API + 'mente/update/' + this.$route.params.id,
                 headers: {
                     Accept: "application/json",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -80,7 +80,7 @@ export default {
         Swal.fire(notification.swalLoading);
         let config = {
             method: "get",
-            url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/getid/' + this.$route.params.id,
+            url: process.env.VUE_APP_BACKEND_URL_API + 'mente/getid/' + this.$route.params.id,
             headers:{
                 Accept:'aplication/json',
                 Authorization: 'Bearer ' + localStorage.getItem('accessToken')
@@ -114,7 +114,7 @@ export default {
     getMentee() {
         let config = {
             method: 'get',
-            url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/mente',
+            url: process.env.VUE_APP_BACKEND_URL_API + 'mente/mente',
             headers: {
                 Accept: 'application/json',
                 Authorization: "Bearer " + localStorage.getItem('accessToken')

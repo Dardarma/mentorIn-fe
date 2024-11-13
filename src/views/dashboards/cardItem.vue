@@ -31,14 +31,14 @@ export default {
         };
     },
     mounted(){
-        this.getData()
+       this.getData()
     },
     methods:{
         getData(page = 1){
             Swal.fire(nottification.swalLoading)
             let config = {
                 method: "get",
-                url: `${process.env.VUE_APP_BACKEND_URL_API}jadwal?page=${page}`,
+                url: `${process.env.VUE_APP_BACKEND_URL_API}mente?page=${page}`,
                 headers: {
                     Accept: "application/json",
                     Authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -123,14 +123,10 @@ export default {
                                         <div class="p-2">
                                             <strong>Materi:</strong>
                                             <p>{{ truncateText(card.materi.description) }}</p>
-                                            <strong>To-Do Past:</strong> 
-                                            <p>{{ truncateText(card.todo.todo) }}</p>
-                                            <strong>To-Do Pre:</strong> 
-                                            <p>{{ truncateText(card?.hasil?.todo?.todo)}}</p>
-                                            <strong>Hasil:</strong> 
-                                            <p>{{ truncateText(card?.hasil?.hasil) }}</p>
-                                            <strong>Feedback:</strong>
-                                            <p>{{truncateText(card?.hasil?.feedback )}}</p>
+                                            <strong>Jam Mentoring</strong>
+                                            <p>{{ card.jam_mentoring }}</p>
+                                            <strong>Jam Mentoring</strong>
+                                            <p>{{ card.tanggal_mentoring }}</p>
                                             <div>
                                                 <BLink  class="text-primary" @click="showModalDetail(card)">
                                                   Read more <i class="mdi mdi-arrow-right"></i>

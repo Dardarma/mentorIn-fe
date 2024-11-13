@@ -81,7 +81,7 @@ export default {
     Swal.fire(notification.swalLoading);
         let config = {
           method: "get",
-          url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/notifikasi',
+          url: process.env.VUE_APP_BACKEND_URL_API + 'mente/notifikasi',
           headers: {
               Accept: "application/json",
               Authorization: "Bearer " + localStorage.getItem("accessToken")
@@ -96,7 +96,7 @@ export default {
               }).join("");
           Swal.fire({
                 icon: 'info',
-                title: 'Mentoring Besok',
+                title: 'Mentoring dalam waktu dekat',
                 html: `<ul>${listJadwal}</ul>`, // Menampilkan daftar kegiatan dalam bentuk list
                 confirmButtonText: 'OK'
         })
@@ -108,7 +108,7 @@ export default {
    getBulan(){
     let config ={
       method: "get",
-      url: process.env.VUE_APP_BACKEND_URL_API + 'jadwal/bulan',
+      url: process.env.VUE_APP_BACKEND_URL_API + 'mente/bulan',
       headers:{
         Accept: "application/json",
         Authorization: "Bearer " + localStorage.getItem('accessToken')

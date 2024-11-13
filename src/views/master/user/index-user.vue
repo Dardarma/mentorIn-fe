@@ -199,7 +199,7 @@ export default {
 
                     let config_delete = {
                         method: "delete",
-                        url: process.env.VUE_APP_BACKEND_URL_API + 'user/' + data?.role_id,
+                        url: process.env.VUE_APP_BACKEND_URL_API + 'user/' + data?.user_id,
                         headers: {
                             Authorization: "Bearer " + localStorage.getItem('accessToken')
                         }
