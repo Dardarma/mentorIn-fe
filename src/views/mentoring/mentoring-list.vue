@@ -86,7 +86,7 @@ export default {
                     search: this.tableHeadPagination.SearchData,
                     sort_field: this.tableHeadPagination.SortKey,
                     sort_order: this.tableHeadPagination.SortOrderDir,
-                    status: this.tableData.filter_status,
+                    status_mentoring: this.tableData.filter_status,
                     mente: this.tableData.filter_mentee
                 },
                 headers: {
@@ -217,7 +217,7 @@ export default {
                                     <BFormSelect :options="statusOptions" v-model="tableData.filter_status" v-on:change="getTableData()"/>
                                 </div>
                                 <div class="col-3">
-                                    <BFormSelect id="namaMentee" v-model="tableData.filter_mentee" :options="menteeOptions" />
+                                    <BFormSelect id="namaMentee" v-model="tableData.filter_mentee" :options="menteeOptions" v-on:change="getTableData()"/>
                                 </div>
                             </div>
                         </div>
