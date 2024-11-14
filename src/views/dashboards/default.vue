@@ -90,7 +90,7 @@ export default {
 
         axios(config).then((response)=>{
           let dataResponse = response.data;
-          if(dataResponse.meta.status === "success" && dataResponse.data.length > 0){
+          if(dataResponse.meta.status === "success" && dataResponse.data && dataResponse.data.length > 0){
               let listJadwal = dataResponse.data.map((jadwal) => {
                 return `${jadwal.user.name} - ${jadwal.jam_mentoring}`;
               }).join("");
@@ -117,7 +117,6 @@ export default {
 
     axios (config).then((response)=>{
         this.mentoring_bulan = response.data.data
-      console.log(this.mentoring_bulan)
     }).catch((error)=>{
       console.error("mentoring Blan",error)
     })

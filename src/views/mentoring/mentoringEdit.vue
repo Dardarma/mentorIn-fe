@@ -223,7 +223,7 @@ export default {
                             </BCol>
                             <BCol cols="12" class="mt-4">
                                 <Label>Feedback</Label>
-                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" :disabled="!item.status && isEdit"/>
+                                <BFormTextarea placeholder="Feedback" v-model="item.feedback" rows="5" :disabled="!item.status || isEdit"/>
                             </BCol>
                             </BRow>
                        </BForm>
