@@ -255,7 +255,7 @@ export default {
                                         </BCard>
                                     </BCol>
                                 </BRow>
-                                </BContainer>
+                            </BContainer>
 
                             <hr class="my-4" />
                             <div class="text-center">

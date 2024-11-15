@@ -65,7 +65,7 @@
     "vue3-echarts": "^1.1.0",
     "vue3-google-map": "^0.18.0",
     "vue3-scroll-spy": "^1.0.8",
-    "vuedraggable": "^2.24.3"
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@achrinza/node-ipc": "^10.1.7",
